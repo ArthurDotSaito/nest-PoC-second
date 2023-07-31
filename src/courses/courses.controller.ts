@@ -18,27 +18,26 @@ export class CoursesController {
 
   @Get()
   findAll(@Res() response) {
-    return response.status(HttpStatus.OK).send('List all courses');
+    return this.coursesService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return `return #${id} course`;
+    return this.coursesService.findOne(id);
   }
 
   @Post()
-  @HttpCode(HttpStatus.NO_CONTENT)
   create(@Body() body) {
-    return body;
+    return this.coursesService.create(body);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() body) {
-    return `Update course ${id}`;
+    return this.coursesService.uptade(id, body);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return `Remove #${id} course`;
+    return this.coursesService.remove(id);
   }
 }
