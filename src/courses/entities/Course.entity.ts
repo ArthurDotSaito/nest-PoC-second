@@ -19,6 +19,6 @@ export class Course {
   description: string;
 
   @JoinTable()
-  @ManyToMany((type) => Tag, (tag: Tag) => tag.courses)
+  @ManyToMany(() => Tag, (tag: Tag) => tag.courses)
   tags: string[];
 }
