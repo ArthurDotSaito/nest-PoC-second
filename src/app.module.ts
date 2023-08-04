@@ -2,24 +2,13 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CoursesModule } from './courses/courses.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from 'dotenv';
+import { DatabaseModule } from './database/database.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 config();
 
 @Module({
-  imports: [
-    CoursesModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: process.env.POSTGRES_USERNAME,
-      password: process.env.POSTGRES_PASSWORD,
-      database: 'postgres',
-      autoLoadEntities: true,
-      synchronize: true,
-    }),
-  ],
+  imports: [CoursesModule, DatabaseModule, TypeOrmModule],
   controllers: [AppController],
   providers: [AppService],
 })
