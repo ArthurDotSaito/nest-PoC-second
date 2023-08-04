@@ -16,12 +16,13 @@ export class CoursesService {
   ) {}
 
   findAll() {
-    return this.courseRepository.find();
+    return this.courseRepository.find({ relations: ['tags'] });
   }
 
   async findOne(id: string): Promise<Course> {
     const course = await this.courseRepository.findOne({
       where: { id: parseInt(id) },
+      relations: ['tags'],
     });
 
     if (!course)
