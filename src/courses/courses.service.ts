@@ -4,12 +4,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCourseDTO } from './dto/create-course.dto';
 import { UpdateCourseDTO } from './dto/update-course.dto';
+import { Tag } from './entities/Tag.entity';
 
 @Injectable()
 export class CoursesService {
   constructor(
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+    @InjectRepository(Tag)
+    private readonly tagRepository: Repository<Tag>,
   ) {}
 
   findAll() {
@@ -26,16 +29,26 @@ export class CoursesService {
 
     return course;
   }
+  async create(createCourseDTO: CreateCourseDTO) {
+    const tags = await Promise.all(
+      createCourseDTO.tags.map((name) => this.preloadTagByName(name)),
+    );
 
-  create(createCourseDTO: CreateCourseDTO) {
-    const course = this.courseRepository.create(createCourseDTO);
+    const course = this.courseRepository.create({ ...createCourseDTO, tags });
     return this.courseRepository.save(course);
   }
 
   async uptade(id: string, updateCourseDTO: UpdateCourseDTO) {
+    const tags =
+      updateCourseDTO &&
+      (await Promise.all(
+        updateCourseDTO.tags.map((name) => this.preloadTagByName(name)),
+      ));
+
     const course = await this.courseRepository.preload({
       id: parseInt(id),
       ...updateCourseDTO,
+      tags,
     });
     if (!course)
       throw new NotFoundException(`There's no course with id:#${id}`);
@@ -51,5 +64,14 @@ export class CoursesService {
       throw new NotFoundException(`There's no course with id:#${id}`);
 
     return this.courseRepository.remove(course);
+  }
+
+  private async preloadTagByName(name: string): Promise<Tag> {
+    const tag = await this.tagRepository.findOne({ where: { name: name } });
+    if (tag) {
+      return tag;
+    }
+
+    return this.tagRepository.create({ name: name });
   }
 }
