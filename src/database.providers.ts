@@ -9,13 +9,13 @@ export const databaseProviders = [
     useFactory: async () => {
       const dataSource = new DataSource({
         type: 'postgres',
-        host: 'localhost',
+        host: 'db',
         port: 5432,
         username: process.env.POSTGRES_USERNAME,
         password: process.env.POSTGRES_PASSWORD,
-        database: 'postgres',
+        database: 'nest-second-poc-db',
         entities: [__dirname + '/../**/*.entity.js'],
-        synchronize: true,
+        synchronize: false,
       });
       return dataSource.initialize();
     },
@@ -24,12 +24,12 @@ export const databaseProviders = [
 
 export const dataSource = new DataSource({
   type: 'postgres',
-  host: 'localhost',
+  host: 'db',
   port: 5432,
   username: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
-  database: 'postgres',
+  database: 'nest-second-poc-db',
   entities: [__dirname + '/../**/*.entity.js'],
-  synchronize: true,
+  synchronize: false,
   migrations: [DatabaseMigration1691174903003],
 });
