@@ -13,7 +13,7 @@ export const databaseProviders = [
         port: 5432,
         username: process.env.POSTGRES_USERNAME,
         password: process.env.POSTGRES_PASSWORD,
-        database: 'nest-second-poc-db',
+        database: 'nestpoc_typeorm',
         entities: [__dirname + '/../**/*.entity.js'],
         synchronize: false,
       });
@@ -28,7 +28,7 @@ export const dataSource = new DataSource({
   port: 5432,
   username: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
-  database: 'nest-second-poc-db',
+  database: 'nestpoc_typeorm',
   entities: [__dirname + '/../**/*.entity.js'],
   synchronize: false,
   migrations: [DatabaseMigration1691174903003],
