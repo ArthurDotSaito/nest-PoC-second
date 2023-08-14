@@ -22,7 +22,7 @@ services:
     ports: 
       - "5432:5432"
     volumes:
-      - .docker/dbdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
@@ -31,7 +31,12 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGDATA=/tmp
     ports:
       - "8000:80"
     depends_on:
       - db
+    
+volumes:
+  pgdata:
+    driver: local
