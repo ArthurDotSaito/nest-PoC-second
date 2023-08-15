@@ -13,7 +13,7 @@ import { Tag } from './Tag.entity';
 @Entity('courses')
 export class Course {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column()
   name: string;
