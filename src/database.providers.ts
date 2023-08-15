@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
-import { DatabaseMigration1691174903003 } from './migrations/1691174903003-databaseMigration';
+import { CoursesNestDBTypeORM1692058068337 } from './migrations/1692058068337-CoursesNestDB-typeORM';
+import { CreateTagsTable1692058535964 } from './migrations/1692058535964-createTagsTable';
 config();
 
 export const databaseProviders = [
@@ -11,7 +12,7 @@ export const databaseProviders = [
         type: 'postgres',
         host: 'db',
         port: 5432,
-        username: process.env.POSTGRES_USER,
+        username: 'postgres',
         password: 'docker',
         database: 'nest_poc_db',
         entities: [__dirname + '/../**/*.entity.js'],
@@ -26,10 +27,10 @@ export const dataSource = new DataSource({
   type: 'postgres',
   host: 'db',
   port: 5432,
-  username: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
+  username: 'postgres',
+  password: 'docker',
   database: 'nest_poc_db',
   entities: [__dirname + '/../**/*.entity.js'],
   synchronize: false,
-  migrations: [DatabaseMigration1691174903003],
+  migrations: [CoursesNestDBTypeORM1692058068337, CreateTagsTable1692058535964],
 });

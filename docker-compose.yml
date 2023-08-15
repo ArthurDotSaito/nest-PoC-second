@@ -17,8 +17,9 @@ services:
     container_name: nest-second-poc-db
     restart: always
     tty: true
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=nest_poc_db
     ports: 
       - "5433:5432"
     volumes:
@@ -31,7 +32,6 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=admin
-      - PGDATA=/tmp
     ports:
       - "8000:80"
     depends_on:
