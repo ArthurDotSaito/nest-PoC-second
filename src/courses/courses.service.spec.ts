@@ -1,52 +1,56 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { CoursesService } from './courses.service';
-import { Connection, Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Course } from './entities/Course.entity';
-import { Tag } from './entities/Tag.entity';
-
-type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
-
-const createMockRepository = <T = any>(): MockRepository<T> => ({
-  findOne: jest.fn(),
-});
+import { faker } from '@faker-js/faker';
+import { CreateCourseDTO } from './dto/create-course.dto';
 
 describe('CoursesService', () => {
   let service: CoursesService;
-  let coursesRepository: MockRepository;
+  let id: string;
+  let date: Date;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CoursesService,
-        { provide: Connection, useValue: {} },
-        {
-          provide: getRepositoryToken(Course),
-          useValue: createMockRepository(),
-        },
-        { provide: getRepositoryToken(Tag), useValue: createMockRepository() },
-      ],
-    }).compile();
-
-    service = module.get<CoursesService>(CoursesService);
-    coursesRepository = module.get<MockRepository>(getRepositoryToken(Course));
+    service = new CoursesService();
+    id = faker.string.uuid();
+    date = new Date();
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  describe('findOne', () => {
-    describe('should search course by id', () => {
-      it('Should return a course object', async () => {
-        const courseId = '1';
-        const expectCourse = {};
+  it('Should create a course', async () => {
+    const expectOutputTags = [{ id, name: 'nestjs', createdAt: date }];
+    const expectOutputCourse = [
+      {
+        id,
+        name: 'Test',
+        description: 'Test description',
+        tags: expectOutputTags,
+        createdAt: date,
+      },
+    ];
+    const mockCourseRepository = {
+      create: jest.fn().mockReturnValue(Promise.resolve(expectOutputCourse)),
+      save: jest.fn().mockReturnValue(Promise.resolve(expectOutputCourse)),
+    };
+    const mockTagRepository = {
+      create: jest.fn().mockReturnValue(Promise.resolve(expectOutputTags)),
+      findOne: jest.fn(),
+    };
 
-        coursesRepository.findOne.mockReturnValue(expectCourse);
-        const course = await service.findOne(courseId);
-        expect(course).toEqual(expectCourse);
-      });
-      it('Should return a notFoundException if there is no corse', () => {});
-    });
+    //@ts-expect-error defined part of methods
+    service['courseRepository'] = mockCourseRepository;
+
+    //@ts-expect-error defined part of methods
+    service['tagRepository'] = mockTagRepository;
+
+    const createCourseDTO: CreateCourseDTO = {
+      name: 'Test',
+      description: 'Test Description',
+      tags: ['nestJS'],
+    };
+
+    const newCourse = await service.create(createCourseDTO);
+    expect(mockCourseRepository.save).toHaveBeenCalled();
+    expect(newCourse).toStrictEqual(expectOutputCourse);
   });
 });
