@@ -103,17 +103,7 @@ describe('CoursesService', () => {
     expect(course).toStrictEqual(expectOutputCourse);
   });
 
-  it('Should return a NotFound Error when there is no course', async () => {
-    const expectOutputTags = [{ id, name: 'nestjs', createdAt: date }];
-    const expectOutputCourse = [
-      {
-        id,
-        name: 'Test',
-        description: 'Test description',
-        tags: expectOutputTags,
-        createdAt: date,
-      },
-    ];
+  it('Should return a NotFound Error when there is no course in findOne method', async () => {
     const mockCourseRepository = {
       findOne: jest.fn().mockReturnValue(Promise.resolve(undefined)),
     };
@@ -129,7 +119,7 @@ describe('CoursesService', () => {
     }
   });
 
-  it('Should create a course', async () => {
+  it('Should update a course', async () => {
     const expectOutputTags = [{ id, name: 'nestjs', createdAt: date }];
     const expectOutputCourse = [
       {
@@ -163,7 +153,53 @@ describe('CoursesService', () => {
     };
 
     const course = await service.uptade(id, updateCourseDTO);
+    expect(mockCourseRepository.preload).toHaveBeenCalled();
     expect(mockCourseRepository.save).toHaveBeenCalled();
     expect(course).toStrictEqual(expectOutputCourse);
+  });
+
+  it('Should return a NotFound Error when there is no course in update method', async () => {
+    const expectOutputTags = [{ id, name: 'nestjs', createdAt: date }];
+    const expectOutputCourse = [
+      {
+        id,
+        name: 'Test',
+        description: 'Test description',
+        tags: expectOutputTags,
+        createdAt: date,
+      },
+    ];
+    const mockCourseRepository = {
+      update: jest.fn().mockReturnValue(Promise.resolve(null)),
+      preload: jest.fn().mockReturnValue(Promise.resolve(null)),
+      save: jest.fn().mockReturnValue(Promise.resolve(null)),
+    };
+    const mockTagRepository = {
+      create: jest.fn().mockReturnValue(Promise.resolve(expectOutputTags)),
+      findOne: jest.fn(),
+    };
+
+    //@ts-expect-error defined part of methods
+    service['courseRepository'] = mockCourseRepository;
+
+    //@ts-expect-error defined part of methods
+    service['tagRepository'] = mockTagRepository;
+
+    const updateCourseDTO: UpdateCourseDTO = {
+      name: 'Test',
+      description: 'Test Description',
+      tags: ['nestJS'],
+    };
+
+    let errorCaught = false;
+    try {
+      await service.uptade('12312312eds', updateCourseDTO);
+      expect(mockCourseRepository.preload).toHaveBeenCalled();
+    } catch (error) {
+      errorCaught = true;
+      console.log(error);
+      expect(error).toBeInstanceOf(NotFoundException);
+    }
+    expect(errorCaught).toBe(true);
   });
 });
