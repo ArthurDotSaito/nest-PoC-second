@@ -25,6 +25,19 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  db-test:
+    build: .docker/postgres
+    container_name: nest-second-poc-db-test
+    restart: always
+    tty: true
+    environment:
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=nest_poc_db_test
+    ports: 
+      - "5434:5432"
+    volumes:
+      - pgdata-test:/var/lib/postgresql/data
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: nest-second-poc-pgadmin
@@ -39,4 +52,6 @@ services:
     
 volumes:
   pgdata:
+    driver: local
+  pgdata-test:
     driver: local
